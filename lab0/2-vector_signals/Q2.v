@@ -18,6 +18,6 @@ module vector_signals (
     assign not_a = ~a;
     assign not_b = ~b;
 
-    assign out_not[5:0] = {a, b};
+    assign out_not[5:0] = {not_a, not_b};
 
 endmodule
