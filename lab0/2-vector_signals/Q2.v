@@ -20,8 +20,4 @@ module vector_signals (
 
     assign out_not[5:0] = {a, b};
 
-    assign out_or_bitwise = 3'd0;
-    assign out_or_logical = 1'b0;
-    assign out_not[5:0] = 6'd0;
-
 endmodule
