@@ -9,6 +9,16 @@ module vector_signals (
     output [5:0] out_not
 );
 
+    wire not_a;
+    wire not_b;
+
+    assign out_or_bitwise = a | b;
+    assign out_or_logical = a || b;
+
+    assign not_a = ~a;
+    assign not_b = ~b;
+
+    assign out_not[5:0] = {a, b};
 
     assign out_or_bitwise = 3'd0;
     assign out_or_logical = 1'b0;
