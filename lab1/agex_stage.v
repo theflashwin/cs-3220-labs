@@ -31,6 +31,12 @@ module AGEX_STAGE(
   /////////////////////////////////////////////////////////////////////////////
   // TODO: Complete remaining code logic here!
 
+  wire signed [`DBITS-1:0] signed_regval1_AGEX;
+  wire signed [`DBITS-1:0] signed_regval2_AGEX;
+
+  assign signed_regval1_AGEX = regval1_AGEX;
+  assign signed_regval2_AGEX = regval2_AGEX;
+
   wire is_br_AGEX;
   wire wr_reg_AGEX;
   wire [`REGNOBITS-1:0] wregno_AGEX;
@@ -38,23 +44,21 @@ module AGEX_STAGE(
   wire [`DBITS-1:0] regval1_AGEX;
   wire [`DBITS-1:0] regval2_AGEX;
   wire [`DBITS-1:0] sxt_imm_AGEX;
+  reg  [`DBITS-1:0] aluout_AGEX;
 
   reg [`DBITS-1:0] br_target_AGEX;
   wire br_mispred_AGEX;
-
   
   // Calculate branch condition
   // TODO: complete the code
   always @ (*) begin
     case (op_I_AGEX)
-      `BEQ_I : br_cond_AGEX = 1; // write correct code to check the branch condition. 
-      /*
-      `BNE_I : ...
-      `BLT_I : ...
-      `BGE_I : ...
-      `BLTU_I: ..
-      `BGEU_I : ...
-      */
+      `BEQ_I  : br_cond_AGEX = (regval1_AGEX == regval2_AGEX) ? 1'b1 : 1'b0; // write correct code to check the branch condition. 
+      `BNE_I  : br_cond_AGEX = (regval1_AGEX != regval2_AGEX) ? 1'b1 : 1'b0;
+      `BLT_I  : br_cond_AGEX = (signed_regval1_AGEX < signed_regval2_AGEX) ? 1'b1 : 1'b0;
+      `BGE_I  : br_cond_AGEX = (signed_regval1_AGEX >= signed_regval2_AGEX) ? 1'b1 : 1'b0;
+      `BLTU_I : br_cond_AGEX = (regval1_AGEX < regval2_AGEX) ? 1'b1 : 1'b0;
+      `BGEU_I : br_cond_AGEX = (regval1_AGEX >= regval2_AGEX) ? 1'b1 : 1'b0;
       default : br_cond_AGEX = 1'b0;
     endcase
   end
@@ -62,18 +66,24 @@ module AGEX_STAGE(
   // Compute ALU operations  (alu out or memory addresses)
   // TODO: complete the code
   always @ (*) begin
-    // case (op_I_AGEX)
-    //   default: begin
-    //     aluout_AGEX  = '0;
-    //   end
-    // endcase
+    case (op_I_AGEX)
+      `ADD_I  : aluout_AGEX = regval1_AGEX + regval2_AGEX;
+      `ADDI_I : aluout_AGEX = regval1_AGEX + sxt_imm_AGEX; 
+      default: begin
+        aluout_AGEX  = '0;
+      end
+    endcase
   end 
 
   // branch target needs to be computed here 
   // computed branch target needs to send to other pipeline stages (br_target_AGEX)
   // TODO: complete the code
   always @(*)begin
-    // if (is_br_AGEX && br_cond_AGEX) 
+    if (is_br_AGEX && br_cond_AGEX) begin
+      br_target_AGEX = PC_AGEX + sxt_imm_AGEX;
+    end else begin
+      br_target_AGEX = 0;
+    end
   end
 
   assign br_mispred_AGEX = (is_br_AGEX
@@ -86,7 +96,12 @@ module AGEX_STAGE(
                                   pcplus_AGEX,
                                   op_I_AGEX,
                                   inst_count_AGEX,
-                                          //  TODO: more signals might needed
+                                  regval1_AGEX,
+                                  regval2_AGEX,
+                                  sxt_imm_AGEX,
+                                  is_br_AGEX,
+                                  wr_reg_AGEX,
+                                  wregno_AGEX
                                   } = from_DE_latch; 
     
  
@@ -96,7 +111,9 @@ module AGEX_STAGE(
                                 PC_AGEX,
                                 op_I_AGEX,
                                 inst_count_AGEX,
-                                       // TODO: more signals might needed
+                                aluout_AGEX,
+                                wr_reg_AGEX,
+                                wregno_AGEX
                                  }; 
  
   always @ (posedge clk ) begin
@@ -112,12 +129,13 @@ module AGEX_STAGE(
 
   // forward signals to FE stage
   assign from_AGEX_to_FE = { 
-      //  TODO: more signals might needed
+      br_mispred_AGEX,
+      br_target_AGEX
   };
 
   // forward signals to DE stage
   assign from_AGEX_to_DE = { 
-    //  TODO: more signals might needed
+    br_mispred_AGEX
   };
 
 endmodule
