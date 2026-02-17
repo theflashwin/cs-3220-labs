@@ -47,6 +47,12 @@ module AGEX_STAGE(
   reg [`DBITS-1:0] br_target_AGEX;
   wire br_mispred_AGEX;
 
+  wire [7:0] pht_index;
+  wire [31:0] predicted_pc;
+
+  // counters
+  reg [31:0] num_correctly_predicted_branches /* verilator public */;
+  reg [31:0] num_branch_instructions /* verilator public */;
   
   // Calculate branch condition
   // TODO: complete the code
@@ -119,7 +125,34 @@ module AGEX_STAGE(
   end
 
   assign br_mispred_AGEX = ((is_br_AGEX || is_jmp_AGEX) 
-                         && (br_target_AGEX != pcplus_AGEX)) ? 1 : 0;
+                         && (br_target_AGEX != predicted_pc)) ? 1 : 0;
+
+
+  always @(posedge clk) begin
+
+    if (reset) begin
+
+      num_branch_instructions <= 32'b0;
+      num_correctly_predicted_branches <= 32'b0;
+
+    end else begin
+
+      if (valid_AGEX) begin
+
+        if (is_br_AGEX || is_jmp_AGEX) begin
+          num_branch_instructions <= num_branch_instructions + 1;
+
+          if (!br_mispred_AGEX) begin
+            num_correctly_predicted_branches <= num_correctly_predicted_branches + 1;
+          end
+
+        end
+
+      end
+
+    end
+
+  end
 
     assign  {                     
                                   valid_AGEX,
@@ -128,7 +161,9 @@ module AGEX_STAGE(
                                   pcplus_AGEX,
                                   op_I_AGEX,
                                   inst_count_AGEX,
-                                          // more signals might need
+                                  // more signals might need
+                                  pht_index,
+                                  predicted_pc,
                                   regval1_AGEX,
                                   regval2_AGEX,
                                   sxt_imm_AGEX,                                
@@ -166,11 +201,20 @@ module AGEX_STAGE(
         end 
   end
 
-
+  // update the branch pred logic (just propogate and define signals)
+  wire [31:0] new_btb_target = br_target_AGEX;
+  wire br_taken = (is_br_AGEX && br_cond_AGEX) || is_jmp_AGEX;
+  wire was_branch_inst = is_br_AGEX || is_jmp_AGEX;
+ 
   // forward signals to FE stage
   assign from_AGEX_to_FE = { 
     br_mispred_AGEX, 
-    br_target_AGEX
+    br_target_AGEX,
+    new_btb_target,
+    br_taken,
+    pht_index,
+    PC_AGEX,
+    was_branch_inst
   };
 
   // forward signals to DE stage

@@ -332,13 +332,19 @@ end
     end
   end
 
-// decoding the contents of FE latch out. the order should be matched with the fe_stage.v 
+// decoding the contents of FE latch out. the order should be matched with the fe_stage.v
+
+wire [7:0] pht_index;
+wire [31:0] predicted_pc;
+
   assign {
             valid_DE,
             inst_DE,
             PC_DE, 
             pcplus_DE,
-            inst_count_DE 
+            inst_count_DE,
+            pht_index,
+            predicted_pc
             }  = from_FE_latch;  // based on the contents of the latch, you can decode the content 
 
 
@@ -353,6 +359,8 @@ end
                                   op_I_DE,
                                   inst_count_DE,
                                   // more signals might need
+                                  pht_index,
+                                  predicted_pc,
                                   rs1_val_DE,
                                   rs2_val_DE,    
                                   sxt_imm_DE,
