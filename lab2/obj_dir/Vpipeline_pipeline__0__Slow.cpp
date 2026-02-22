@@ -9,10 +9,10 @@ VL_ATTR_COLD void Vpipeline_pipeline___eval_initial__TOP__pipeline(Vpipeline_pip
     Vpipeline__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
     // Body
-    VL_READMEM_N(true, 32, 16384, 0, "/Users/ashwinmudaliar/Documents/School/Sp26/CS3220/cs-3220-labs/lab2/test/towers/towers.mem"s
+    VL_READMEM_N(true, 32, 16384, 0, "/Users/ashwinmudaliar/Documents/School/Sp26/CS3220/cs-3220-labs/lab2/test/part2/test9.mem"s
                  ,  &(vlSelfRef.__PVT__my_FE_stage__DOT__imem)
                  , 0, ~0ULL);
-    VL_READMEM_N(true, 32, 16384, 0, "/Users/ashwinmudaliar/Documents/School/Sp26/CS3220/cs-3220-labs/lab2/test/towers/towers.mem"s
+    VL_READMEM_N(true, 32, 16384, 0, "/Users/ashwinmudaliar/Documents/School/Sp26/CS3220/cs-3220-labs/lab2/test/part2/test9.mem"s
                  ,  &(vlSelfRef.__PVT__my_MEM_stage__DOT__dmem)
                  , 0, ~0ULL);
 }
