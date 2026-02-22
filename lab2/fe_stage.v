@@ -139,12 +139,12 @@ module FE_STAGE(
 
       // initialize PHT
       for (integer i = 0; i < 256; i = i+1) begin
-        pht[i] <= 2'b01;
+        pht[i] = 2'b01;
       end
 
       // initialize BTB
       for (integer i = 0; i < 16; i=i+1) begin
-        btb[i] <= 59'b0;
+        btb[i] = 59'b0;
       end
       
       end 
