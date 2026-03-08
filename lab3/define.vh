@@ -28,7 +28,7 @@
 // address space is m 0x00000000 to 0x000fffff
 // [NOTICE] please note that both imem and dmem use the SAME "IDMEMINITFILE".
 // you need to change this line to change which test file to read 
-`define IDMEMINITFILE "/home/hice1/amudaliar6/cs3220/cs3220-labs-sp2026/lab3/test/part5/alutest0.mem"
+`define IDMEMINITFILE "/home/hice1/amudaliar6/cs3220/cs3220-labs-sp2026/lab3/test/part6/alutest1.mem"
 `define IMEMADDRBITS    16
 `define IMEMWORDBITS    2
 `define IMEMWORDS	    (1 << (`IMEMADDRBITS - `IMEMWORDBITS))

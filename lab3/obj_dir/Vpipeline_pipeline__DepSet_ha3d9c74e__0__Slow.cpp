@@ -8,14 +8,14 @@
 #include "Vpipeline__Syms.h"
 #include "Vpipeline_pipeline.h"
 
-extern const VlWide<20>/*639:0*/ Vpipeline__ConstPool__CONST_hbe78bd23_0;
+extern const VlWide<20>/*639:0*/ Vpipeline__ConstPool__CONST_h21d419e4_0;
 
 VL_ATTR_COLD void Vpipeline_pipeline___eval_initial__TOP__pipeline(Vpipeline_pipeline* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
     Vpipeline__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+      Vpipeline_pipeline___eval_initial__TOP__pipeline\n"); );
     // Body
-    VL_READMEM_N(true, 32, 16384, 0, VL_CVT_PACK_STR_NW(20, Vpipeline__ConstPool__CONST_hbe78bd23_0)
+    VL_READMEM_N(true, 32, 16384, 0, VL_CVT_PACK_STR_NW(20, Vpipeline__ConstPool__CONST_h21d419e4_0)
                  ,  &(vlSelf->__PVT__my_FE_stage__DOT__imem)
                  , 0, ~0ULL);
     vlSelf->__PVT__my_FE_stage__DOT__BHR = 0U;
@@ -108,7 +108,7 @@ VL_ATTR_COLD void Vpipeline_pipeline___eval_initial__TOP__pipeline(Vpipeline_pip
     vlSelf->__PVT__my_DE_stage__DOT__reg_file[0x1eU] = 0U;
     vlSelf->__PVT__my_DE_stage__DOT__reg_file[0x1fU] = 0U;
     vlSelf->__PVT__my_DE_stage__DOT__unnamedblk1__DOT__i = 0x20U;
-    VL_READMEM_N(true, 32, 16384, 0, VL_CVT_PACK_STR_NW(20, Vpipeline__ConstPool__CONST_hbe78bd23_0)
+    VL_READMEM_N(true, 32, 16384, 0, VL_CVT_PACK_STR_NW(20, Vpipeline__ConstPool__CONST_h21d419e4_0)
                  ,  &(vlSelf->__PVT__my_MEM_stage__DOT__dmem)
                  , 0, ~0ULL);
 }

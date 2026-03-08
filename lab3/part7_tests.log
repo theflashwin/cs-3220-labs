@@ -1,0 +1,7 @@
+
+TESTING: /home/hice1/amudaliar6/cs3220/cs3220-labs-sp2026/lab3/test/part7/alutest2.mem
+-- VERILATE ----------------
+/home/hice1/amudaliar6/cs3220/cs3220-labs-sp2026/lab3/test/part7/alutest2.mem
+/home/hice1/amudaliar6/cs3220/cs3220-labs-sp2026/lab3/define.vh
+sed -i 's|define IDMEMINITFILE.*|define IDMEMINITFILE "/home/hice1/amudaliar6/cs3220/cs3220-labs-sp2026/lab3/test/part7/alutest2.mem"|g'  /home/hice1/amudaliar6/cs3220/cs3220-labs-sp2026/lab3/define.vh
+verilator --exe -cc pipeline.v --top-module pipeline --trace --trace-structs --assert -Wpedantic -Wno-DECLFILENAME -Wno-UNUSED --x-initial unique --x-assign unique sim_main.cpp fe_stage.v de_stage.v mem_stage.v wb_stage.v agex_stage.v divider.v external_alu_wrapper.v FU_stage.v multiplier.v -CFLAGS '-DIDMEMINITFILE=/home/hice1/amudaliar6/cs3220/cs3220-labs-sp2026/lab3/test/part7/alutest2.mem -DVCD_OUTPUT -DDPRINTF'
