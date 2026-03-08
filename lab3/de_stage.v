@@ -433,7 +433,7 @@ module DE_STAGE(
         ALU_ALUOP: begin
           if (wr_reg_WB && (wregno_WB == `OP1_REG_IDX))
             op1_reg <= regval_WB;
-          if (op1_reg != 0 && csr_fu[0]) begin
+          if ((wr_reg_WB && wregno_WB == `OP1_REG_IDX || op1_reg != 0) && csr_fu[0]) begin
             csr_alu_reg   <= 3'b011;
             alu_state_reg <= ALU_OP1;
           end
@@ -441,7 +441,7 @@ module DE_STAGE(
         ALU_OP1: begin
           if (wr_reg_WB && (wregno_WB == `OP2_REG_IDX))
             op2_reg <= regval_WB;
-          if (op2_reg != 0 && csr_fu[1]) begin
+          if ((wr_reg_WB && wregno_WB == `OP2_REG_IDX || op2_reg != 0) && csr_fu[1]) begin
             csr_alu_reg   <= 3'b100;
             alu_state_reg <= ALU_OP2;
           end
