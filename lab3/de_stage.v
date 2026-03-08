@@ -415,10 +415,6 @@ module DE_STAGE(
 
   always @(negedge clk) begin
 
-    if (wr_reg_WB) begin
-      reg_file[wregno_WB] <= regval_WB;
-    end
-
     if (reset) begin
       alu_state_reg <= ALU_IDLE;
       csr_alu_reg   <= 3'b001;
