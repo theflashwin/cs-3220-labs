@@ -25,10 +25,6 @@ class alignas(VL_CACHE_LINE_BYTES) Vpipeline VL_NOT_FINAL : public VerilatedMode
 
   public:
 
-    // CONSTEXPR CAPABILITIES
-    // Verilated with --trace?
-    static constexpr bool traceCapable = true;
-
     // PORTS
     // The application code writes and reads these signals to
     // propagate new values into/out from the Verilated model.
@@ -72,7 +68,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vpipeline VL_NOT_FINAL : public VerilatedMode
     /// Returns time at next time slot. Aborts if !eventsPending()
     uint64_t nextTimeSlot();
     /// Trace signals in the model; called by application code
-    void trace(VerilatedTraceBaseC* tfp, int levels, int options = 0) { contextp()->trace(tfp, levels, options); }
+    void trace(VerilatedVcdC* tfp, int levels, int options = 0);
     /// Retrieve name of this model instance (as passed to constructor).
     const char* name() const;
 
@@ -80,16 +76,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vpipeline VL_NOT_FINAL : public VerilatedMode
     const char* hierName() const override final;
     const char* modelName() const override final;
     unsigned threads() const override final;
-    /// Prepare for cloning the model at the process level (e.g. fork in Linux)
-    /// Release necessary resources. Called before cloning.
-    void prepareClone() const;
-    /// Re-init after cloning the model at the process level (e.g. fork in Linux)
-    /// Re-allocate necessary resources. Called after cloning.
-    void atClone() const;
     std::unique_ptr<VerilatedTraceConfig> traceConfig() const override final;
-  private:
-    // Internal functions - trace registration
-    void traceBaseModel(VerilatedTraceBaseC* tfp, int levels, int options);
 };
 
 #endif  // guard

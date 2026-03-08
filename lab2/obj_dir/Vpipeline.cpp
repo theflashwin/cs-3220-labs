@@ -1,8 +1,10 @@
 // Verilated -*- C++ -*-
 // DESCRIPTION: Verilator output: Model implementation (design independent parts)
 
-#include "Vpipeline__pch.h"
+#include "Vpipeline.h"
+#include "Vpipeline__Syms.h"
 #include "verilated_vcd_c.h"
+#include "verilated_dpi.h"
 
 //============================================================
 // Constructors
@@ -17,8 +19,6 @@ Vpipeline::Vpipeline(VerilatedContext* _vcontextp__, const char* _vcname__)
 {
     // Register model with the context
     contextp()->addModel(this);
-    contextp()->traceBaseModelCbAdd(
-        [this](VerilatedTraceBaseC* tfp, int levels, int options) { traceBaseModel(tfp, levels, options); });
 }
 
 Vpipeline::Vpipeline(const char* _vcname__)
@@ -59,9 +59,13 @@ void Vpipeline::eval_step() {
         Vpipeline___024root___eval_initial(&(vlSymsp->TOP));
         Vpipeline___024root___eval_settle(&(vlSymsp->TOP));
     }
+    // MTask 0 start
+    VL_DEBUG_IF(VL_DBG_MSGF("MTask0 starting\n"););
+    Verilated::mtaskId(0);
     VL_DEBUG_IF(VL_DBG_MSGF("+ Eval\n"););
     Vpipeline___024root___eval(&(vlSymsp->TOP));
     // Evaluate cleanup
+    Verilated::endOfThreadMTask(vlSymsp->__Vm_evalMsgQp);
     Verilated::endOfEval(vlSymsp->__Vm_evalMsgQp);
 }
 
@@ -70,7 +74,7 @@ void Vpipeline::eval_step() {
 bool Vpipeline::eventsPending() { return false; }
 
 uint64_t Vpipeline::nextTimeSlot() {
-    VL_FATAL_MT(__FILE__, __LINE__, "", "No delays in the design");
+    VL_FATAL_MT(__FILE__, __LINE__, "", "%Error: No delays in the design");
     return 0;
 }
 
@@ -96,18 +100,12 @@ VL_ATTR_COLD void Vpipeline::final() {
 const char* Vpipeline::hierName() const { return vlSymsp->name(); }
 const char* Vpipeline::modelName() const { return "Vpipeline"; }
 unsigned Vpipeline::threads() const { return 1; }
-void Vpipeline::prepareClone() const { contextp()->prepareClone(); }
-void Vpipeline::atClone() const {
-    contextp()->threadPoolpOnClone();
-}
 std::unique_ptr<VerilatedTraceConfig> Vpipeline::traceConfig() const {
     return std::unique_ptr<VerilatedTraceConfig>{new VerilatedTraceConfig{false, false, false}};
 };
 
 //============================================================
 // Trace configuration
-
-void Vpipeline___024root__trace_decl_types(VerilatedVcd* tracep);
 
 void Vpipeline___024root__trace_init_top(Vpipeline___024root* vlSelf, VerilatedVcd* tracep);
 
@@ -120,22 +118,21 @@ VL_ATTR_COLD static void trace_init(void* voidSelf, VerilatedVcd* tracep, uint32
             "Turning on wave traces requires Verilated::traceEverOn(true) call before time 0.");
     }
     vlSymsp->__Vm_baseCode = code;
-    tracep->pushPrefix(vlSymsp->name(), VerilatedTracePrefixType::SCOPE_MODULE);
-    Vpipeline___024root__trace_decl_types(tracep);
+    tracep->scopeEscape(' ');
+    tracep->pushNamePrefix(std::string{vlSymsp->name()} + ' ');
     Vpipeline___024root__trace_init_top(vlSelf, tracep);
-    tracep->popPrefix();
+    tracep->popNamePrefix();
+    tracep->scopeEscape('.');
 }
 
 VL_ATTR_COLD void Vpipeline___024root__trace_register(Vpipeline___024root* vlSelf, VerilatedVcd* tracep);
 
-VL_ATTR_COLD void Vpipeline::traceBaseModel(VerilatedTraceBaseC* tfp, int levels, int options) {
-    (void)levels; (void)options;
-    VerilatedVcdC* const stfp = dynamic_cast<VerilatedVcdC*>(tfp);
-    if (VL_UNLIKELY(!stfp)) {
-        vl_fatal(__FILE__, __LINE__, __FILE__,"'Vpipeline::trace()' called on non-VerilatedVcdC object;"
-            " use --trace-fst with VerilatedFst object, and --trace-vcd with VerilatedVcd object");
+VL_ATTR_COLD void Vpipeline::trace(VerilatedVcdC* tfp, int levels, int options) {
+    if (tfp->isOpen()) {
+        vl_fatal(__FILE__, __LINE__, __FILE__,"'Vpipeline::trace()' shall not be called after 'VerilatedVcdC::open()'.");
     }
-    stfp->spTrace()->addModel(this);
-    stfp->spTrace()->addInitCb(&trace_init, &(vlSymsp->TOP));
-    Vpipeline___024root__trace_register(&(vlSymsp->TOP), stfp->spTrace());
+    if (false && levels && options) {}  // Prevent unused
+    tfp->spTrace()->addModel(this);
+    tfp->spTrace()->addInitCb(&trace_init, &(vlSymsp->TOP));
+    Vpipeline___024root__trace_register(&(vlSymsp->TOP), tfp->spTrace());
 }

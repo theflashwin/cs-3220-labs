@@ -2,21 +2,26 @@
 // DESCRIPTION: Verilator output: Design implementation internals
 // See Vpipeline.h for the primary calling header
 
-#include "Vpipeline__pch.h"
+#include "verilated.h"
+#include "verilated_dpi.h"
+
+#include "Vpipeline__Syms.h"
+#include "Vpipeline_AGEX_STAGE.h"
+#include "Vpipeline__Syms.h"
 
 void Vpipeline_AGEX_STAGE___ctor_var_reset(Vpipeline_AGEX_STAGE* vlSelf);
 
-void Vpipeline_AGEX_STAGE::ctor(Vpipeline__Syms* symsp, const char* namep) {
-    vlSymsp = symsp;
-    vlNamep = strdup(Verilated::catName(vlSymsp->name(), namep));
+Vpipeline_AGEX_STAGE::Vpipeline_AGEX_STAGE(Vpipeline__Syms* symsp, const char* v__name)
+    : VerilatedModule{v__name}
+    , vlSymsp{symsp}
+ {
     // Reset structure values
     Vpipeline_AGEX_STAGE___ctor_var_reset(this);
 }
 
 void Vpipeline_AGEX_STAGE::__Vconfigure(bool first) {
-    (void)first;  // Prevent unused variable warning
+    if (false && first) {}  // Prevent unused
 }
 
-void Vpipeline_AGEX_STAGE::dtor() {
-    VL_DO_DANGLING(std::free(const_cast<char*>(vlNamep)), vlNamep);
+Vpipeline_AGEX_STAGE::~Vpipeline_AGEX_STAGE() {
 }
