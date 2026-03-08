@@ -21,7 +21,7 @@
 // DPI TYPES for DPI Export callbacks (Internal use)
 
 // SYMS CLASS (contains all model state)
-class alignas(VL_CACHE_LINE_BYTES) Vpipeline__Syms final : public VerilatedSyms {
+class alignas(VL_CACHE_LINE_BYTES)Vpipeline__Syms final : public VerilatedSyms {
   public:
     // INTERNAL STATE
     Vpipeline* const __Vm_modelp;
@@ -36,14 +36,14 @@ class alignas(VL_CACHE_LINE_BYTES) Vpipeline__Syms final : public VerilatedSyms 
     Vpipeline_WB_STAGE             TOP__pipeline__my_WB_stage;
 
     // SCOPE NAMES
-    VerilatedScope* __Vscopep_pipeline__my_WB_stage;
+    VerilatedScope __Vscope_pipeline__my_WB_stage;
 
     // CONSTRUCTORS
     Vpipeline__Syms(VerilatedContext* contextp, const char* namep, Vpipeline* modelp);
     ~Vpipeline__Syms();
 
     // METHODS
-    const char* name() const { return TOP.vlNamep; }
+    const char* name() { return TOP.name(); }
 };
 
 #endif  // guard

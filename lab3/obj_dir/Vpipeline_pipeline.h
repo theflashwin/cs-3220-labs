@@ -11,7 +11,7 @@ class Vpipeline_WB_STAGE;
 
 class Vpipeline__Syms;
 
-class alignas(VL_CACHE_LINE_BYTES) Vpipeline_pipeline final {
+class alignas(VL_CACHE_LINE_BYTES) Vpipeline_pipeline final : public VerilatedModule {
   public:
     // CELLS
     Vpipeline_WB_STAGE* my_WB_stage;
@@ -36,8 +36,8 @@ class alignas(VL_CACHE_LINE_BYTES) Vpipeline_pipeline final {
         CData/*3:0*/ __PVT__my_DE_stage__DOT__aluop_reg;
         CData/*2:0*/ __PVT__my_DE_stage__DOT__csr_alu_reg;
         CData/*2:0*/ __PVT__my_DE_stage__DOT__alu_state_reg;
-        CData/*0:0*/ my_AGEX_stage__DOT____VdfgExtracted_h6ac6cdbe__0;
-        CData/*0:0*/ my_AGEX_stage__DOT____VdfgExtracted_h690ea6c9__0;
+        CData/*0:0*/ my_AGEX_stage__DOT____VdfgExtracted_h047d73e2__0;
+        CData/*0:0*/ my_AGEX_stage__DOT____VdfgExtracted_h048118d3__0;
         CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__ALU_resutls_valid;
         CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_output_z_stb;
         CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_input_a_ack;
@@ -60,14 +60,14 @@ class alignas(VL_CACHE_LINE_BYTES) Vpipeline_pipeline final {
         CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__guard;
         CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__round_bit;
         CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__sticky;
-        CData/*0:0*/ __VdlySet__my_MEM_stage__DOT__dmem__v0;
+        CData/*0:0*/ __Vdlyvset__my_MEM_stage__DOT__dmem__v0;
         SData/*9:0*/ __PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__a_e;
         SData/*9:0*/ __PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__b_e;
         SData/*9:0*/ __PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__z_e;
         SData/*9:0*/ __PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__a_e;
         SData/*9:0*/ __PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__b_e;
         SData/*9:0*/ __PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__z_e;
-        SData/*13:0*/ __VdlyDim0__my_MEM_stage__DOT__dmem__v0;
+        SData/*13:0*/ __Vdlyvdim0__my_MEM_stage__DOT__dmem__v0;
         IData/*31:0*/ __PVT__cycle_count;
         VlWide<5>/*136:0*/ __PVT__my_FE_stage__DOT__FE_latch;
         IData/*31:0*/ __PVT__my_FE_stage__DOT__PC_FE_latch;
@@ -79,13 +79,12 @@ class alignas(VL_CACHE_LINE_BYTES) Vpipeline_pipeline final {
         IData/*31:0*/ __PVT__my_FE_stage__DOT__unnamedblk1__DOT__i;
         IData/*31:0*/ __PVT__my_FE_stage__DOT__unnamedblk2__DOT__i;
         VlWide<8>/*248:0*/ __PVT__my_DE_stage__DOT__DE_latch;
-        IData/*31:0*/ __PVT__my_DE_stage__DOT__regval_WB;
         IData/*31:0*/ __PVT__my_DE_stage__DOT__in_use_regs;
         IData/*31:0*/ __PVT__my_DE_stage__DOT__op3_fu;
         IData/*31:0*/ __PVT__my_DE_stage__DOT__op1_reg;
+        IData/*31:0*/ __PVT__my_DE_stage__DOT__op2_reg;
     };
     struct {
-        IData/*31:0*/ __PVT__my_DE_stage__DOT__op2_reg;
         IData/*31:0*/ __PVT__my_DE_stage__DOT__unnamedblk1__DOT__i;
         VlWide<5>/*142:0*/ __PVT__my_AGEX_stage__DOT__AGEX_latch;
         IData/*31:0*/ __PVT__my_AGEX_stage__DOT__aluout_AGEX;
@@ -106,7 +105,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vpipeline_pipeline final {
         IData/*23:0*/ __PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__b_m;
         IData/*23:0*/ __PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__z_m;
         VlWide<5>/*136:0*/ __Vdly__my_FE_stage__DOT__FE_latch;
-        IData/*31:0*/ __VdlyVal__my_MEM_stage__DOT__dmem__v0;
+        IData/*31:0*/ __Vdlyvval__my_MEM_stage__DOT__dmem__v0;
         QData/*50:0*/ __PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__quotient;
         QData/*50:0*/ __PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__divisor;
         QData/*50:0*/ __PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__dividend;
@@ -122,14 +121,11 @@ class alignas(VL_CACHE_LINE_BYTES) Vpipeline_pipeline final {
     };
 
     // INTERNAL VARIABLES
-    Vpipeline__Syms* vlSymsp;
-    const char* vlNamep;
+    Vpipeline__Syms* const vlSymsp;
 
     // CONSTRUCTORS
-    Vpipeline_pipeline() = default;
-    ~Vpipeline_pipeline() = default;
-    void ctor(Vpipeline__Syms* symsp, const char* namep);
-    void dtor();
+    Vpipeline_pipeline(Vpipeline__Syms* symsp, const char* v__name);
+    ~Vpipeline_pipeline();
     VL_UNCOPYABLE(Vpipeline_pipeline);
 
     // INTERNAL METHODS

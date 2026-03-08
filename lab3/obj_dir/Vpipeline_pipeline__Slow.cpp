@@ -2,21 +2,26 @@
 // DESCRIPTION: Verilator output: Design implementation internals
 // See Vpipeline.h for the primary calling header
 
-#include "Vpipeline__pch.h"
+#include "verilated.h"
+#include "verilated_dpi.h"
+
+#include "Vpipeline__Syms.h"
+#include "Vpipeline__Syms.h"
+#include "Vpipeline_pipeline.h"
 
 void Vpipeline_pipeline___ctor_var_reset(Vpipeline_pipeline* vlSelf);
 
-void Vpipeline_pipeline::ctor(Vpipeline__Syms* symsp, const char* namep) {
-    vlSymsp = symsp;
-    vlNamep = strdup(Verilated::catName(vlSymsp->name(), namep));
+Vpipeline_pipeline::Vpipeline_pipeline(Vpipeline__Syms* symsp, const char* v__name)
+    : VerilatedModule{v__name}
+    , vlSymsp{symsp}
+ {
     // Reset structure values
     Vpipeline_pipeline___ctor_var_reset(this);
 }
 
 void Vpipeline_pipeline::__Vconfigure(bool first) {
-    (void)first;  // Prevent unused variable warning
+    if (false && first) {}  // Prevent unused
 }
 
-void Vpipeline_pipeline::dtor() {
-    VL_DO_DANGLING(std::free(const_cast<char*>(vlNamep)), vlNamep);
+Vpipeline_pipeline::~Vpipeline_pipeline() {
 }
