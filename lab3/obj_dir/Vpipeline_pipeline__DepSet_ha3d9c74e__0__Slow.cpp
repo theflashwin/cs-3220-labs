@@ -147,12 +147,16 @@ VL_ATTR_COLD void Vpipeline_pipeline___stl_sequent__TOP__pipeline__0(Vpipeline_p
                      >> 2U))];
     if ((1U == (IData)(vlSelf->__PVT__my_DE_stage__DOT__aluop_reg))) {
         vlSelf->__PVT__my_DE_stage__DOT__op3_fu = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_output_z;
-        vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_resutls_valid 
-            = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_output_z_stb;
+        vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_2 
+            = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_input_b_ack;
+        vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_1 
+            = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_input_a_ack;
     } else {
         vlSelf->__PVT__my_DE_stage__DOT__op3_fu = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__s_output_z;
-        vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_resutls_valid 
-            = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__s_output_z_stb;
+        vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_2 
+            = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__s_input_b_ack;
+        vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_1 
+            = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__s_input_a_ack;
     }
     vlSelf->__PVT__my_FE_stage__DOT__pc_xor_bhr_FE 
         = (0xffU & ((vlSelf->__PVT__my_FE_stage__DOT__PC_FE_latch 
@@ -237,6 +241,14 @@ VL_ATTR_COLD void Vpipeline_pipeline___stl_sequent__TOP__pipeline__0(Vpipeline_p
                                                    : 
                                                   ((IData)(4U) 
                                                    + vlSelf->__PVT__my_FE_stage__DOT__PC_FE_latch));
+    vlSelf->__PVT__my_DE_stage__DOT__csr_fu = ((((1U 
+                                                  == (IData)(vlSelf->__PVT__my_DE_stage__DOT__aluop_reg))
+                                                  ? (IData)(vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_output_z_stb)
+                                                  : (IData)(vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__s_output_z_stb)) 
+                                                << 2U) 
+                                               | (((IData)(vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_2) 
+                                                   << 1U) 
+                                                  | (IData)(vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_1)));
     if ((1U & (~ ((((((((1U == (0x3fU & (vlSelf->__PVT__my_DE_stage__DOT__DE_latch[3U] 
                                          >> 0x12U))) 
                         | (2U == (0x3fU & (vlSelf->__PVT__my_DE_stage__DOT__DE_latch[3U] 
@@ -1030,7 +1042,12 @@ VL_ATTR_COLD void Vpipeline_pipeline___stl_sequent__TOP__pipeline__0(Vpipeline_p
                                                    << 4U) 
                                                   | (vlSelf->__PVT__my_FE_stage__DOT__FE_latch[3U] 
                                                      >> 0x1cU)))))) 
-                                    | (IData)(vlSelf->__PVT__from_AGEX_to_DE));
+                                    | ((IData)(vlSelf->__PVT__from_AGEX_to_DE) 
+                                       | (((~ (IData)(vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_1)) 
+                                           & (1U == (IData)(vlSelf->__PVT__my_DE_stage__DOT__alu_state_reg))) 
+                                          | ((~ (IData)(vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_2)) 
+                                             & (2U 
+                                                == (IData)(vlSelf->__PVT__my_DE_stage__DOT__alu_state_reg))))));
 }
 
 VL_ATTR_COLD void Vpipeline_pipeline___ctor_var_reset(Vpipeline_pipeline* vlSelf) {
@@ -1083,6 +1100,7 @@ VL_ATTR_COLD void Vpipeline_pipeline___ctor_var_reset(Vpipeline_pipeline* vlSelf
     vlSelf->__PVT__my_DE_stage__DOT__use_rs2_DE = VL_RAND_RESET_I(1);
     vlSelf->__PVT__my_DE_stage__DOT__in_use_regs = VL_RAND_RESET_I(32);
     vlSelf->__PVT__my_DE_stage__DOT__op3_fu = VL_RAND_RESET_I(32);
+    vlSelf->__PVT__my_DE_stage__DOT__csr_fu = VL_RAND_RESET_I(3);
     vlSelf->__PVT__my_DE_stage__DOT__op1_reg = VL_RAND_RESET_I(32);
     vlSelf->__PVT__my_DE_stage__DOT__op2_reg = VL_RAND_RESET_I(32);
     vlSelf->__PVT__my_DE_stage__DOT__aluop_reg = VL_RAND_RESET_I(4);
@@ -1098,7 +1116,8 @@ VL_ATTR_COLD void Vpipeline_pipeline___ctor_var_reset(Vpipeline_pipeline* vlSelf
         vlSelf->__PVT__my_MEM_stage__DOT__dmem[__Vi0] = VL_RAND_RESET_I(32);
     }
     VL_RAND_RESET_W(141, vlSelf->__PVT__my_MEM_stage__DOT__MEM_latch);
-    vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_resutls_valid = VL_RAND_RESET_I(1);
+    vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_1 = VL_RAND_RESET_I(1);
+    vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_2 = VL_RAND_RESET_I(1);
     vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_output_z_stb = VL_RAND_RESET_I(1);
     vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_output_z = VL_RAND_RESET_I(32);
     vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_input_a_ack = VL_RAND_RESET_I(1);

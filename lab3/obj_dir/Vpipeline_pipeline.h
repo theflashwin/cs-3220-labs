@@ -33,12 +33,14 @@ class alignas(VL_CACHE_LINE_BYTES) Vpipeline_pipeline final : public VerilatedMo
         CData/*0:0*/ __PVT__my_DE_stage__DOT__wr_reg_DE;
         CData/*0:0*/ __PVT__my_DE_stage__DOT__use_rs1_DE;
         CData/*0:0*/ __PVT__my_DE_stage__DOT__use_rs2_DE;
+        CData/*2:0*/ __PVT__my_DE_stage__DOT__csr_fu;
         CData/*3:0*/ __PVT__my_DE_stage__DOT__aluop_reg;
         CData/*2:0*/ __PVT__my_DE_stage__DOT__csr_alu_reg;
         CData/*2:0*/ __PVT__my_DE_stage__DOT__alu_state_reg;
         CData/*0:0*/ my_AGEX_stage__DOT____VdfgExtracted_h047d73e2__0;
         CData/*0:0*/ my_AGEX_stage__DOT____VdfgExtracted_h048118d3__0;
-        CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__ALU_resutls_valid;
+        CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_1;
+        CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_2;
         CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_output_z_stb;
         CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_input_a_ack;
         CData/*0:0*/ __PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_input_b_ack;
@@ -81,10 +83,10 @@ class alignas(VL_CACHE_LINE_BYTES) Vpipeline_pipeline final : public VerilatedMo
         VlWide<8>/*248:0*/ __PVT__my_DE_stage__DOT__DE_latch;
         IData/*31:0*/ __PVT__my_DE_stage__DOT__in_use_regs;
         IData/*31:0*/ __PVT__my_DE_stage__DOT__op3_fu;
-        IData/*31:0*/ __PVT__my_DE_stage__DOT__op1_reg;
-        IData/*31:0*/ __PVT__my_DE_stage__DOT__op2_reg;
     };
     struct {
+        IData/*31:0*/ __PVT__my_DE_stage__DOT__op1_reg;
+        IData/*31:0*/ __PVT__my_DE_stage__DOT__op2_reg;
         IData/*31:0*/ __PVT__my_DE_stage__DOT__unnamedblk1__DOT__i;
         VlWide<5>/*142:0*/ __PVT__my_AGEX_stage__DOT__AGEX_latch;
         IData/*31:0*/ __PVT__my_AGEX_stage__DOT__aluout_AGEX;

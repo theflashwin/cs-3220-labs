@@ -17,6 +17,7 @@ VL_ATTR_COLD void Vpipeline___024root___eval_initial(Vpipeline___024root* vlSelf
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vpipeline___024root___eval_initial\n"); );
     // Body
     Vpipeline_pipeline___eval_initial__TOP__pipeline((&vlSymsp->TOP__pipeline));
+    vlSelf->__Vm_traceActivity[3U] = 1U;
     vlSelf->__Vm_traceActivity[2U] = 1U;
     vlSelf->__Vm_traceActivity[1U] = 1U;
     vlSelf->__Vm_traceActivity[0U] = 1U;
@@ -50,6 +51,7 @@ VL_ATTR_COLD void Vpipeline___024root___eval_stl(Vpipeline___024root* vlSelf) {
     // Body
     if ((1ULL & vlSelf->__VstlTriggered.word(0U))) {
         Vpipeline_pipeline___stl_sequent__TOP__pipeline__0((&vlSymsp->TOP__pipeline));
+        vlSelf->__Vm_traceActivity[3U] = 1U;
         vlSelf->__Vm_traceActivity[2U] = 1U;
         vlSelf->__Vm_traceActivity[1U] = 1U;
         vlSelf->__Vm_traceActivity[0U] = 1U;

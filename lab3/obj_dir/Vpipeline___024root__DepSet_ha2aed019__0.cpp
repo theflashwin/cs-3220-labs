@@ -57,5 +57,6 @@ void Vpipeline___024root___eval_nba(Vpipeline___024root* vlSelf) {
     }
     if ((3ULL & vlSelf->__VnbaTriggered.word(0U))) {
         Vpipeline_pipeline___nba_comb__TOP__pipeline__0((&vlSymsp->TOP__pipeline));
+        vlSelf->__Vm_traceActivity[3U] = 1U;
     }
 }
