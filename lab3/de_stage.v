@@ -321,7 +321,8 @@ module DE_STAGE(
                          || (use_rs2_DE && in_use_regs[rs2_DE]);
 
   //TODO: part2/bonus modify as necessary
-  assign pipeline_stall_DE = has_data_hazards || br_mispred_AGEX;
+  assign pipeline_stall_DE = has_data_hazards || br_mispred_AGEX
+  || ((alu_state_reg == ALU_ALUOP && ~csr_fu[0]) || (alu_state_reg == ALU_OP1 && ~csr_fu[1]));
 
   always @(posedge clk) begin
     if (reset) begin
@@ -434,15 +435,17 @@ module DE_STAGE(
           end
         end
         ALU_ALUOP: begin
-          if (wr_reg_WB && (wregno_WB == `OP1_REG_IDX)) begin
-            op1_reg       <= regval_WB;
+          if (wr_reg_WB && (wregno_WB == `OP1_REG_IDX))
+            op1_reg <= regval_WB;
+          if (op1_reg != 0 && csr_fu[0]) begin
             csr_alu_reg   <= 3'b011;
             alu_state_reg <= ALU_OP1;
           end
         end
         ALU_OP1: begin
-          if (wr_reg_WB && (wregno_WB == `OP2_REG_IDX)) begin
-            op2_reg       <= regval_WB;
+          if (wr_reg_WB && (wregno_WB == `OP2_REG_IDX))
+            op2_reg <= regval_WB;
+          if (op2_reg != 0 && csr_fu[1]) begin
             csr_alu_reg   <= 3'b100;
             alu_state_reg <= ALU_OP2;
           end
