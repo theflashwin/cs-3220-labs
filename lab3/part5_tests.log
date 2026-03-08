@@ -1,0 +1,6 @@
+
+TESTING: /Users/ashwinmudaliar/Documents/School/SP26/CS3220/cs-3220-labs/lab3/test/part5/alutest0.mem
+-- VERILATE ----------------
+/Users/ashwinmudaliar/Documents/School/SP26/CS3220/cs-3220-labs/lab3/test/part5/alutest0.mem
+/Users/ashwinmudaliar/Documents/School/SP26/CS3220/cs-3220-labs/lab3/define.vh
+sed -i 's|define IDMEMINITFILE.*|define IDMEMINITFILE "/Users/ashwinmudaliar/Documents/School/SP26/CS3220/cs-3220-labs/lab3/test/part5/alutest0.mem"|g'  /Users/ashwinmudaliar/Documents/School/SP26/CS3220/cs-3220-labs/lab3/define.vh
