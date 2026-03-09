@@ -15,16 +15,16 @@ VL_INLINE_OPT void Vpipeline_pipeline___nba_comb__TOP__pipeline__0(Vpipeline_pip
     // Body
     if ((1U == (IData)(vlSelf->__PVT__my_DE_stage__DOT__aluop_reg))) {
         vlSelf->__PVT__my_DE_stage__DOT__op3_fu = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_output_z;
-        vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_2 
-            = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_input_b_ack;
         vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_1 
             = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_input_a_ack;
+        vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_2 
+            = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__div0__DOT__s_input_b_ack;
     } else {
         vlSelf->__PVT__my_DE_stage__DOT__op3_fu = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__s_output_z;
-        vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_2 
-            = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__s_input_b_ack;
         vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_1 
             = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__s_input_a_ack;
+        vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__ALU_ready_2 
+            = vlSelf->__PVT__my_FU_stage__DOT__alu__DOT__mult0__DOT__s_input_b_ack;
     }
     vlSelf->__PVT__my_DE_stage__DOT__csr_fu = ((((1U 
                                                   == (IData)(vlSelf->__PVT__my_DE_stage__DOT__aluop_reg))

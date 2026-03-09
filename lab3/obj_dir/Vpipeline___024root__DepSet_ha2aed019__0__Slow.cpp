@@ -42,7 +42,7 @@ VL_ATTR_COLD void Vpipeline___024root___eval_triggers__stl(Vpipeline___024root* 
 }
 
 VL_ATTR_COLD void Vpipeline_pipeline___stl_sequent__TOP__pipeline__0(Vpipeline_pipeline* vlSelf);
-void Vpipeline_WB_STAGE___nba_sequent__TOP__pipeline__my_WB_stage__1(Vpipeline_WB_STAGE* vlSelf);
+void Vpipeline_WB_STAGE___nba_sequent__TOP__pipeline__my_WB_stage__2(Vpipeline_WB_STAGE* vlSelf);
 
 VL_ATTR_COLD void Vpipeline___024root___eval_stl(Vpipeline___024root* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
@@ -55,6 +55,6 @@ VL_ATTR_COLD void Vpipeline___024root___eval_stl(Vpipeline___024root* vlSelf) {
         vlSelf->__Vm_traceActivity[2U] = 1U;
         vlSelf->__Vm_traceActivity[1U] = 1U;
         vlSelf->__Vm_traceActivity[0U] = 1U;
-        Vpipeline_WB_STAGE___nba_sequent__TOP__pipeline__my_WB_stage__1((&vlSymsp->TOP__pipeline__my_WB_stage));
+        Vpipeline_WB_STAGE___nba_sequent__TOP__pipeline__my_WB_stage__2((&vlSymsp->TOP__pipeline__my_WB_stage));
     }
 }

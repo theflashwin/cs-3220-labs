@@ -43,16 +43,16 @@ void Vpipeline___024root___eval_nba(Vpipeline___024root* vlSelf) {
     Vpipeline__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vpipeline___024root___eval_nba\n"); );
     // Body
-    if ((1ULL & vlSelf->__VnbaTriggered.word(0U))) {
+    if ((2ULL & vlSelf->__VnbaTriggered.word(0U))) {
         Vpipeline_pipeline___nba_sequent__TOP__pipeline__0((&vlSymsp->TOP__pipeline));
         vlSelf->__Vm_traceActivity[1U] = 1U;
         Vpipeline_WB_STAGE___nba_sequent__TOP__pipeline__my_WB_stage__0((&vlSymsp->TOP__pipeline__my_WB_stage));
-        Vpipeline_pipeline___nba_sequent__TOP__pipeline__1((&vlSymsp->TOP__pipeline));
-        Vpipeline_WB_STAGE___nba_sequent__TOP__pipeline__my_WB_stage__1((&vlSymsp->TOP__pipeline__my_WB_stage));
     }
-    if ((2ULL & vlSelf->__VnbaTriggered.word(0U))) {
-        Vpipeline_pipeline___nba_sequent__TOP__pipeline__2((&vlSymsp->TOP__pipeline));
+    if ((1ULL & vlSelf->__VnbaTriggered.word(0U))) {
+        Vpipeline_pipeline___nba_sequent__TOP__pipeline__1((&vlSymsp->TOP__pipeline));
         vlSelf->__Vm_traceActivity[2U] = 1U;
+        Vpipeline_WB_STAGE___nba_sequent__TOP__pipeline__my_WB_stage__1((&vlSymsp->TOP__pipeline__my_WB_stage));
+        Vpipeline_pipeline___nba_sequent__TOP__pipeline__2((&vlSymsp->TOP__pipeline));
         Vpipeline_WB_STAGE___nba_sequent__TOP__pipeline__my_WB_stage__2((&vlSymsp->TOP__pipeline__my_WB_stage));
     }
     if ((3ULL & vlSelf->__VnbaTriggered.word(0U))) {
