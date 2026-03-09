@@ -425,21 +425,25 @@ module DE_STAGE(
       case (alu_state_reg)
         ALU_IDLE: begin
           csr_alu_reg <= 3'b001;
+          op1_reg     <= 32'b0;
+          op2_reg     <= 32'b0;
           if (wr_reg_WB && (wregno_WB == `ALUOP_REG_IDX) && (regval_WB[3:0] != 4'b0)) begin
             aluop_reg     <= regval_WB[3:0];
             alu_state_reg <= ALU_ALUOP;
           end
         end
         ALU_ALUOP: begin
-          if (wr_reg_WB && (wregno_WB == `OP1_REG_IDX) && csr_fu[0]) begin
-            op1_reg       <= regval_WB;
+          if (wr_reg_WB && (wregno_WB == `OP1_REG_IDX))
+            op1_reg <= regval_WB;
+          if ((wr_reg_WB && wregno_WB == `OP1_REG_IDX || op1_reg != 0) && csr_fu[0]) begin
             csr_alu_reg   <= 3'b011;
             alu_state_reg <= ALU_OP1;
           end
         end
         ALU_OP1: begin
-          if (wr_reg_WB && (wregno_WB == `OP2_REG_IDX) && csr_fu[1]) begin
-            op2_reg       <= regval_WB;
+          if (wr_reg_WB && (wregno_WB == `OP2_REG_IDX))
+            op2_reg <= regval_WB;
+          if ((wr_reg_WB && wregno_WB == `OP2_REG_IDX || op2_reg != 0) && csr_fu[1]) begin
             csr_alu_reg   <= 3'b100;
             alu_state_reg <= ALU_OP2;
           end
