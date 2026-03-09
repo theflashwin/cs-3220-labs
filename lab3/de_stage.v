@@ -322,7 +322,8 @@ module DE_STAGE(
 
   //TODO: part2/bonus modify as necessary
   assign pipeline_stall_DE = has_data_hazards || br_mispred_AGEX
-  || ((alu_state_reg == ALU_ALUOP && ~csr_fu[0]) || (alu_state_reg == ALU_OP1 && ~csr_fu[1]));
+  || ((alu_state_reg == ALU_ALUOP && ~csr_fu[0]) || (alu_state_reg == ALU_OP1 && ~csr_fu[1]))
+  || (wr_mem_DE && rs2_DE == `OP3_REG_IDX && alu_state_reg != ALU_IDLE);
 
   always @(posedge clk) begin
     if (reset) begin
