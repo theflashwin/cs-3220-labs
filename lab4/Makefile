@@ -65,6 +65,15 @@ axis_data_fifo:
 	$(PYTHON) data_gen.py parse_log
 	@echo "-- DONE --------------------"
 
+simple:
+	@echo "-- VERILATE ----------------"
+	$(VERILATOR) --exe -cc tb_simple.v --top-module tb_simple --trace --trace-structs $(VL_FLAGS) test_simple.cpp axis_data_fifo.v -CFLAGS '$(CXXFLAGS)'
+	@echo "-- COMPILE -----------------"
+	$(MAKE) -j 4 -C obj_dir -f Vtb_simple.mk
+	@echo "-- RUN ---------------------"
+	obj_dir/Vtb_simple
+	@echo "-- DONE --------------------"
+
 axi4_ram:
 	@echo "-- VERILATE ----------------"
 	$(VERILATOR) $(VL_FLAGS_TEST_AXI4_RAM) $(VL_FLAGS) test_axi4_ram.cpp axi4_ram.v axi4_tester_src_non_burst/*.v -CFLAGS '$(CXXFLAGS)'
