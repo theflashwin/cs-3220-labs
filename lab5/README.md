@@ -159,7 +159,7 @@ Check this post https://piazza.com/class/mjxdf87xmug4h3/post/140
 
 Launch [riscv_test.ipynb](riscv_test.ipynb) within the designated Jupyter notebook environment and execute the code. The address 0x20 corresponds to `out1` and 0x30 to `out2`. The value at `out1` will continuously change, reflecting the cycle count, whereas the value at `out2` will display the static value from the 10th register.
 
-*Please include a screenshot of the Jupyter notebook displaying the output in your report.* 
+*Please include a screenshot of the Jupyter notebook displaying the output.* 
 
 ### Step-3: Deploy on the Pynq Board (Workaround)
 
@@ -181,7 +181,7 @@ Under GT VPN, `ssh [username]@pynq-z2-[1-50].cc.gatech.edu`
 - After getting the fpga, `sudo -s` switch to root, and `source /usr/local/share/pynq-venv/bin/activate` to get the python enviroment
 - Execute the code `python riscv_test.py`. The address 0x20 corresponds to `out1` and 0x30 to `out2`. The value at `out1` will continuously change, reflecting the cycle count, whereas the value at `out2` will display the static value from the 10th register.
 
-*Please include a screenshot of the terminal output displaying the output in your report.*
+*Please include a screenshot of the terminal output displaying the output.*
 
 ## Part-2: Dispatch Instructions to Your Processor with AXI Lite
 
