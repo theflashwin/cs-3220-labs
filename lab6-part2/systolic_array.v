@@ -68,8 +68,8 @@ module systolic_array #(
     wire [OUT_WIDTH-1:0] bypass_data_out [0:ROWS][0:COLS];
 
     // Stall / backpressure signals
-    wire mac_full_flag [0:ROWS][0:COLS];
-    wire mac_psum_out_vld [0:ROWS][0:COLS];
+    wire mac_full_flag   [0:ROWS][0:COLS];
+    wire mac_psum_out_vld[0:ROWS][0:COLS];
 
     // Flatten mac_full_flag to compute global stall
     wire [ROWS*COLS-1:0] flat_full_flags;
@@ -86,8 +86,38 @@ module systolic_array #(
     wire [OUT_WIDTH*ROWS-1:0] row_data_out_tmp;
     assign row_data_out = row_data_out_tmp;
 
-    // row_data_out_vld from col=0, row=0 MAC validity signal
-    assign row_data_out_vld = mac_psum_out_vld[0][0];
+    // De-skewing: stream_out_rdy_in propagates 1 cycle later per row, so row r's
+    // col=0 output is valid r cycles after row 0's. Delay row r by (ROWS-1-r) cycles
+    // so all rows align when row ROWS-1 first becomes valid.
+    reg [OUT_WIDTH-1:0] deskew [0:ROWS-1][0:ROWS-2];
+
+    genvar r, d;
+    generate
+        for (r = 0; r < ROWS; r = r + 1) begin: deskew_rows
+            for (d = 0; d < ROWS-1; d = d + 1) begin: deskew_stages
+                always @(posedge clk) begin
+                    if (rst_r)
+                        deskew[r][d] <= 0;
+                    else if (d == 0)
+                        deskew[r][d] <= bypass_data_out[r][0];
+                    else
+                        deskew[r][d] <= deskew[r][d-1];
+                end
+            end
+        end
+
+        for (r = 0; r < ROWS; r = r + 1) begin: data_out
+            // Row ROWS-1 needs 0 extra delay; row r needs ROWS-1-r delay cycles
+            // deskew[r][d] holds bypass_data_out[r][0] delayed by d+1 cycles
+            // tap index = ROWS-2-r gives delay = ROWS-1-r
+            assign row_data_out_tmp[OUT_WIDTH*r +: OUT_WIDTH] =
+                (r == ROWS-1) ? bypass_data_out[r][0]
+                              : deskew[r][ROWS-2-r];
+        end
+    endgenerate
+
+    // row_data_out_vld from the last row (no extra delay needed for it)
+    assign row_data_out_vld = mac_psum_out_vld[ROWS-1][0];
 
     generate
         genvar row, col;
@@ -145,10 +175,6 @@ module systolic_array #(
                     .psum_out_vld(mac_psum_out_vld[row][col])
                 );
             end
-        end
-
-        for (row = 0; row < ROWS; row = row + 1) begin: data_out
-            assign row_data_out_tmp[OUT_WIDTH*row +: OUT_WIDTH] = bypass_data_out[row][0];
         end
     endgenerate
 

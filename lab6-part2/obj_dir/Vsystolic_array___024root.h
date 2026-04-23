@@ -500,6 +500,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vsystolic_array___024root final {
         VlUnpacked<VlUnpacked<CData/*7:0*/, 6>, 5> systolic_array__DOT__bypass_data_out;
         VlUnpacked<VlUnpacked<CData/*0:0*/, 6>, 5> systolic_array__DOT__mac_full_flag;
         VlUnpacked<VlUnpacked<CData/*0:0*/, 6>, 5> systolic_array__DOT__mac_psum_out_vld;
+        VlUnpacked<VlUnpacked<CData/*7:0*/, 3>, 4> systolic_array__DOT__deskew;
         VlUnpacked<CData/*7:0*/, 8> systolic_array__DOT__instantiate_mac_rows__BRA__0__KET____DOT__instantiate_mac_cols__BRA__0__KET____DOT__mac_inst__DOT__psum;
         VlUnpacked<CData/*7:0*/, 2> systolic_array__DOT__instantiate_mac_rows__BRA__0__KET____DOT__instantiate_mac_cols__BRA__0__KET____DOT__mac_inst__DOT__mul__DOT__genblk1__DOT__mult_delayed;
         VlUnpacked<CData/*0:0*/, 2> systolic_array__DOT__instantiate_mac_rows__BRA__0__KET____DOT__instantiate_mac_cols__BRA__0__KET____DOT__mac_inst__DOT__mul__DOT__genblk1__DOT__en_delayed;
@@ -541,9 +542,9 @@ class alignas(VL_CACHE_LINE_BYTES) Vsystolic_array___024root final {
         VlUnpacked<CData/*0:0*/, 2> systolic_array__DOT__instantiate_mac_rows__BRA__1__KET____DOT__instantiate_mac_cols__BRA__4__KET____DOT__mac_inst__DOT__mul__DOT__genblk1__DOT__en_delayed;
         VlUnpacked<CData/*7:0*/, 64> systolic_array__DOT__instantiate_mac_rows__BRA__1__KET____DOT__instantiate_mac_cols__BRA__4__KET____DOT__mac_inst__DOT__output_fifo__DOT__fifo;
         VlUnpacked<CData/*7:0*/, 8> systolic_array__DOT__instantiate_mac_rows__BRA__2__KET____DOT__instantiate_mac_cols__BRA__0__KET____DOT__mac_inst__DOT__psum;
-        VlUnpacked<CData/*7:0*/, 2> systolic_array__DOT__instantiate_mac_rows__BRA__2__KET____DOT__instantiate_mac_cols__BRA__0__KET____DOT__mac_inst__DOT__mul__DOT__genblk1__DOT__mult_delayed;
     };
     struct {
+        VlUnpacked<CData/*7:0*/, 2> systolic_array__DOT__instantiate_mac_rows__BRA__2__KET____DOT__instantiate_mac_cols__BRA__0__KET____DOT__mac_inst__DOT__mul__DOT__genblk1__DOT__mult_delayed;
         VlUnpacked<CData/*0:0*/, 2> systolic_array__DOT__instantiate_mac_rows__BRA__2__KET____DOT__instantiate_mac_cols__BRA__0__KET____DOT__mac_inst__DOT__mul__DOT__genblk1__DOT__en_delayed;
         VlUnpacked<CData/*7:0*/, 64> systolic_array__DOT__instantiate_mac_rows__BRA__2__KET____DOT__instantiate_mac_cols__BRA__0__KET____DOT__mac_inst__DOT__output_fifo__DOT__fifo;
         VlUnpacked<CData/*7:0*/, 8> systolic_array__DOT__instantiate_mac_rows__BRA__2__KET____DOT__instantiate_mac_cols__BRA__1__KET____DOT__mac_inst__DOT__psum;

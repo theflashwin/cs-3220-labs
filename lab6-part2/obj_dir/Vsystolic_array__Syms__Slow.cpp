@@ -11,7 +11,7 @@ Vsystolic_array__Syms::Vsystolic_array__Syms(VerilatedContext* contextp, const c
     , TOP{this, namep}
 {
     // Check resources
-    Verilated::stackCheck(1032);
+    Verilated::stackCheck(1056);
     // Setup sub module instances
     // Configure time unit / time precision
     _vm_contextp__->timeunit(-12);
