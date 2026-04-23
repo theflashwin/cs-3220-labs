@@ -9,7 +9,8 @@ module mac #(
     parameter ROWS = 1,
     parameter COLS = 1,
     parameter COLS_IDX = 1,
-    parameter ROWS_IDX = 1
+    parameter ROWS_IDX = 1,
+    parameter FIFO_DEPTH = 64
 )(
     input                      clk,
     input                      rst,
@@ -17,7 +18,10 @@ module mac #(
     input                      stream_out_rdy_in,
     input       [IN_WIDTH-1:0] row_data_in,
     input       [IN_WIDTH-1:0] col_data_in,
-    input       [IN_WIDTH-1:0] bypass_data_in, 
+    input       [IN_WIDTH-1:0] bypass_data_in,
+    input                      stall,
+    output                     mac_full_flag,
+    output                     psum_out_vld,
     output reg  [IN_WIDTH-1:0] row_data_out,
     output reg  [IN_WIDTH-1:0] col_data_out,
     output reg                 rst_accumulator_out,
@@ -25,10 +29,6 @@ module mac #(
     output reg [OUT_WIDTH-1:0] psum_out
 );
 
-
-    //TODO: Signal declarations
-
-    // psum will be max possible size of K
     localparam COLS_WIDTH = $clog2(COLS);
     reg [OUT_WIDTH-1:0] psum [0:(1 << COLS_WIDTH)-1];
     reg [OUT_WIDTH-1:0] mult_out;
@@ -41,16 +41,16 @@ module mac #(
     wire [OUT_WIDTH-1:0]    adder_out;
     wire                    adder_done;
 
+    wire                    fifo_full;
+    wire                    fifo_empty;
+    wire [OUT_WIDTH-1:0]    fifo_out;
+
     // Bypass controls
     wire bypass_en;
     wire [31:0] temp = COLS - 1;
     wire [$clog2(COLS)-1:0] bypass_counter_max = temp[$clog2(COLS)-1:0];
     reg  [$clog2(COLS)-1:0] bypass_counter;
-    
 
-
-    //TODO: multiplier instantiation
-    // Fix-point multiplier
     wire [IN_WIDTH-1:0] mul_in_A = row_data_in;
     wire [IN_WIDTH-1:0] mul_in_B = col_data_in;
     multiplier #(
@@ -64,7 +64,7 @@ module mac #(
     ) mul (
         .clk(clk),
         .reset(rst),
-        .stall(0),
+        .stall(stall),
         .en(~rst),
         .a_in(mul_in_A),
         .b_in(mul_in_B),
@@ -72,9 +72,6 @@ module mac #(
         .done(multiplier_done)
     );
 
-
-    //TODO: adder instantiation
-    // Fix-point adder
     assign adder_in_A = mult_out;
     assign adder_in_B = (rst_accumulator_in ? '0 : adder_out);
 
@@ -89,7 +86,7 @@ module mac #(
     ) add(
         .clk(clk),
         .reset(rst),
-        .stall(0),
+        .stall(stall),
         .en(~rst && multiplier_done),
         .a_in(adder_in_A),
         .b_in(adder_in_B),
@@ -97,22 +94,19 @@ module mac #(
         .done(adder_done)
     );
 
-    //TODO: signal propagation and synchronization
-    //Major approaches to look out for:
-    // 1. rst_accumulator and stream_out_rdy are major control signals that dictates the flow of the data and when to reset the accumulator between different matrix multiplications
-    // 2. An important part of the following design is to figure out how the data from multipliers and adders should be paired with the above two control signals
-    // 3. Mainly you need to know: should I pass the results of this very own MAC's accumulator to the next MAC's accumulator or should I pass the results of the previous MAC's accumulator to this MAC's accumulator and when to do so
-    // 4. Also, when should be the exact time point to reset the accumulator so my current results will not be cleared by mistake and the next matrix multiplication can start cleanly.
-
-    //pass the row/col/rst/stream_out data 1 clock cycle later
+    // Pass row/col/control signals through with stall support
     always @(posedge clk) begin
         if (rst) begin
             row_data_out        <= 0;
             col_data_out        <= 0;
             rst_accumulator_out <= 0;
             stream_out_rdy_out  <= 0;
-        end
-        else begin
+        end else if (stall) begin
+            row_data_out        <= row_data_out;
+            col_data_out        <= col_data_out;
+            rst_accumulator_out <= rst_accumulator_out;
+            stream_out_rdy_out  <= stream_out_rdy_out;
+        end else begin
             row_data_out        <= row_data_in;
             col_data_out        <= col_data_in;
             rst_accumulator_out <= rst_accumulator_in;
@@ -120,103 +114,93 @@ module mac #(
         end
     end
 
-    //mult 1 clock cycle later
     always @(posedge clk) begin
         if (rst) begin
             mult_out <= 0;
-        end 
-        else if (multiplier_done) begin
+        end else if (stall) begin
+            mult_out <= mult_out;
+        end else if (multiplier_done) begin
             mult_out <= multiplier_out;
-        end 
-        else begin
-            // mult_out <= row_data_in * col_data_in;
+        end else begin
             mult_out <= 0;
         end
     end
 
-    //accumulate 1 clock cycle later
     always @(posedge clk) begin
         if (rst) begin
             psum[0] <= 0;
-        end
-        else begin
+        end else if (stall) begin
+            psum[0] <= psum[0];
+        end else begin
             psum[0] <= adder_out;
         end
     end
 
-    // propagate the psum
-    // The delay is to wait for all macs inside the array to be ready and is
-    // determined by K.
     generate
         genvar i;
         for (i = 0; i < (1 << COLS_WIDTH) - 1; i = i + 1) begin: psum_propagate
             always @(posedge clk) begin
                 if (rst) begin
                     psum[i+1] <= 0;
-                end
-                else begin
+                end else if (stall) begin
+                    psum[i+1] <= psum[i+1];
+                end else begin
                     psum[i+1] <= psum[i];
                 end
             end
         end
     endgenerate
 
-    reg stream_started;
-    always @(posedge clk) begin
-        if (rst) begin
-            stream_started <= 0;
-        end
-        else if (stream_out_rdy_in) begin
-            stream_started <= 1;
-        end
-    end
+    // Output FIFO - decouples accumulation timing from output timing
+    synchronous_fifo #(
+        .DEPTH(FIFO_DEPTH),
+        .DATA_WIDTH(IN_WIDTH)
+    ) output_fifo(
+        .clk(clk),
+        .rst_n(rst),
+        .w_en(stream_out_rdy_in && !stall),
+        .r_en(!bypass_en && !fifo_empty),
+        .data_in(psum[K]),
+        .data_out(fifo_out),
+        .full(fifo_full),
+        .half_full(),
+        .empty(fifo_empty)
+    );
 
+    assign mac_full_flag = stream_out_rdy_in & fifo_full;
 
     assign bypass_en = (bypass_counter != 0);
-
-    reg stream_out_rdy_in_reg;
-    always @(posedge clk) begin
-        if (rst) begin
-            stream_out_rdy_in_reg <= 0;
-        end else begin
-            stream_out_rdy_in_reg <= stream_out_rdy_in;
-        end
-    end
 
     always @(posedge clk) begin
         if (rst) begin
             bypass_counter <= '0;
         end else if (bypass_counter == bypass_counter_max) begin
             bypass_counter <= '0;
-        end else if (stream_out_rdy_in_reg || bypass_en) begin
+        end else if (~fifo_empty || bypass_en) begin
             bypass_counter <= bypass_counter + 1;
         end else begin
             bypass_counter <= '0;
         end
     end
 
-    reg [OUT_WIDTH-1:0] psum_reg;
     always @(posedge clk) begin
         if (rst) begin
-            psum_reg <= 0;
+            psum_out <= '0;
+        end else if (!fifo_empty && !bypass_en) begin
+            psum_out <= fifo_out;
+        end else if (bypass_en) begin
+            psum_out <= bypass_data_in;
         end else begin
-            psum_reg <= psum[K];
+            psum_out <= '0;
         end
     end
 
-    //output the psum; if bypass_en is high, output the bypass_data_in, otherwise output the latest psum
+    // Valid one cycle after the condition that drives psum_out
+    reg psum_out_vld_r;
     always @(posedge clk) begin
-        if (rst) begin
-            psum_out     <= '0;
-        end
-        else if (!bypass_en && stream_started) begin
-            psum_out     <= psum_reg;
-        end
-        else if (bypass_en) begin
-            psum_out     <= bypass_data_in;
-        end else begin
-            psum_out     <= '0;
-        end
+        if (rst) psum_out_vld_r <= 0;
+        else     psum_out_vld_r <= (!fifo_empty || bypass_en);
     end
+    assign psum_out_vld = psum_out_vld_r;
 
 endmodule

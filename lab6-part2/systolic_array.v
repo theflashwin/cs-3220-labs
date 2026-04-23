@@ -25,24 +25,27 @@ module systolic_array #(
     output                      row_data_out_vld,
     input                       row_data_out_rdy
 );
-    //TODO: Signal declarations
-    // register inputs // something todo with verilator timing issue
-    reg       rst;
-    reg       rst_accumulator_rdy;
-    reg       stream_out_rdy;
-    reg [IN_WIDTH*ROWS-1:0] row_data_in;
-    reg [IN_WIDTH*COLS-1:0] col_data_in;
+
+    // Registered copies of inputs (avoids Verilator combinational timing issues)
+    reg       rst_r;
+    reg       rst_accumulator_rdy_r;
+    reg       stream_out_rdy_r;
+    reg [IN_WIDTH*ROWS-1:0] row_data_in_r;
+    reg [IN_WIDTH*COLS-1:0] col_data_in_r;
 
     always @(posedge clk) begin
-        rst <= rst_in;
-        rst_accumulator_rdy <= rst_accumulator_rdy_in;
-        stream_out_rdy <= stream_out_rdy_in_in;
-        row_data_in <= row_data_in_in;
-        col_data_in <= col_data_in_in;
+        rst_r                 <= rst;
+        rst_accumulator_rdy_r <= rst_accumulator_rdy;
+        stream_out_rdy_r      <= stream_out_rdy;
+        row_data_in_r         <= row_data_in;
+        col_data_in_r         <= col_data_in;
     end
 
+    // AXIS handshake: always ready (no backpressure from input side)
+    assign row_data_in_rdy = 1'b1;
+    assign col_data_in_rdy = 1'b1;
 
-    // rst_accumulator wires 
+    // rst_accumulator wires
     wire            rst_accumulator_in  [0:ROWS][0:COLS];
     wire            rst_accumulator_out [0:ROWS][0:COLS];
     wire [COLS-1:0] control_rst_accumulator_rdy;
@@ -52,62 +55,63 @@ module systolic_array #(
     wire            stream_out_rdy_out  [0:ROWS][0:COLS];
     wire [COLS-1:0] control_stream_out_rdy;
 
-    // row data for macs [column number][row number]
-    // data starts from first column and propogates through columns
-    // cannot use COLS-1 or ROWS-1 as for multiples of 4, will wrap around and overrite first value
+    // row data wires [column][row]
     wire [IN_WIDTH-1:0] mac_row_data_in  [0:COLS][0:ROWS];
     wire [IN_WIDTH-1:0] mac_row_data_out [0:COLS][0:ROWS];
 
-    // column data for macs [row number][column number]
-    // data starts from first row and propogates through rows
-    // cannot use COLS-1 or ROWS-1 as for multiples of 4, will wrap around and overrite first value
+    // column data wires [row][column]
     wire [IN_WIDTH-1:0] mac_col_data_in  [0:ROWS][0:COLS];
     wire [IN_WIDTH-1:0] mac_col_data_out [0:ROWS][0:COLS];
 
-    // wires for bypass data [row number][column number]
-    // only needed between rows and columns, last one not used
-    // cannot use COLS-1 or ROWS-1 as for multiples of 4, will wrap around and overrite first value
-    wire  [IN_WIDTH-1:0] bypass_data_in      [0:ROWS][0:COLS];
-    wire [OUT_WIDTH-1:0] bypass_data_out     [0:ROWS][0:COLS];
+    // bypass chain wires [row][column]
+    wire  [IN_WIDTH-1:0] bypass_data_in  [0:ROWS][0:COLS];
+    wire [OUT_WIDTH-1:0] bypass_data_out [0:ROWS][0:COLS];
 
+    // Stall / backpressure signals
+    wire mac_full_flag [0:ROWS][0:COLS];
+    wire mac_psum_out_vld [0:ROWS][0:COLS];
 
-    // wires receiving bypass data
+    // Flatten mac_full_flag to compute global stall
+    wire [ROWS*COLS-1:0] flat_full_flags;
+    genvar fi, fj;
+    generate
+        for (fi = 0; fi < ROWS; fi = fi + 1) begin: flatten_rows
+            for (fj = 0; fj < COLS; fj = fj + 1) begin: flatten_cols
+                assign flat_full_flags[fi*COLS + fj] = mac_full_flag[fi][fj];
+            end
+        end
+    endgenerate
+    wire stall = |flat_full_flags;
+
     wire [OUT_WIDTH*ROWS-1:0] row_data_out_tmp;
-    
-
-
-    //TODO: MAC units instantiation
-    // - Image you are drawing a spatial diagram of the MAC units; how should you connect the wires of them?
-    // - Use generate block to realize the spatial diagram (You are not required to use generate block though)
-
     assign row_data_out = row_data_out_tmp;
 
-    
+    // row_data_out_vld from col=0, row=0 MAC validity signal
+    assign row_data_out_vld = mac_psum_out_vld[0][0];
+
     generate
         genvar row, col;
-        
-        // assign row/column data
+
         for (row = 0; row < ROWS; row = row + 1) begin: assign_row_data_in
             for (col = 0; col < COLS; col = col + 1) begin: assign_col_data_in
                 if (row == 0) begin
-                    assign mac_col_data_in[0][col]     = col_data_in[IN_WIDTH*col +: IN_WIDTH];
-                    assign rst_accumulator_in[0][col]  = control_rst_accumulator_rdy[col];
-                    assign stream_out_rdy_in[0][col]   = control_stream_out_rdy[col];
+                    assign mac_col_data_in[0][col]    = col_data_in_r[IN_WIDTH*col +: IN_WIDTH];
+                    assign rst_accumulator_in[0][col] = control_rst_accumulator_rdy[col];
+                    assign stream_out_rdy_in[0][col]  = control_stream_out_rdy[col];
                 end else begin
-                    assign mac_col_data_in[row][col]     = mac_col_data_out[row-1][col];
-                    assign rst_accumulator_in[row][col]  = rst_accumulator_out[row-1][col];
-                    assign stream_out_rdy_in[row][col]   = stream_out_rdy_out[row-1][col];
+                    assign mac_col_data_in[row][col]    = mac_col_data_out[row-1][col];
+                    assign rst_accumulator_in[row][col] = rst_accumulator_out[row-1][col];
+                    assign stream_out_rdy_in[row][col]  = stream_out_rdy_out[row-1][col];
                 end
                 if (col == 0) begin
-                    assign mac_row_data_in[0][row] =  row_data_in[IN_WIDTH*row +: IN_WIDTH];
+                    assign mac_row_data_in[0][row] = row_data_in_r[IN_WIDTH*row +: IN_WIDTH];
                 end else begin
                     assign mac_row_data_in[col][row] = mac_row_data_out[col-1][row];
                 end
-                assign bypass_data_in[row][col]     = bypass_data_out[row][col+1];
+                assign bypass_data_in[row][col] = bypass_data_out[row][col+1];
             end
         end
 
-        // instantiate MAC array
         for (row = 0; row < ROWS; row = row + 1) begin: instantiate_mac_rows
             for (col = 0; col < COLS; col = col + 1) begin: instantiate_mac_cols
                 mac #(
@@ -121,10 +125,12 @@ module systolic_array #(
                     .COLS(COLS),
                     .ROWS(ROWS),
                     .COLS_IDX(col),
-                    .ROWS_IDX(row)
-                ) mac (
+                    .ROWS_IDX(row),
+                    .FIFO_DEPTH(64)
+                ) mac_inst (
                     .clk(clk),
-                    .rst(rst),
+                    .rst(rst_r),
+                    .stall(stall),
                     .rst_accumulator_in(rst_accumulator_in[row][col]),
                     .stream_out_rdy_in(stream_out_rdy_in[row][col]),
                     .row_data_in(mac_row_data_in[col][row]),
@@ -134,7 +140,9 @@ module systolic_array #(
                     .stream_out_rdy_out(stream_out_rdy_out[row][col]),
                     .row_data_out(mac_row_data_out[col][row]),
                     .col_data_out(mac_col_data_out[row][col]),
-                    .psum_out(bypass_data_out[row][col])
+                    .psum_out(bypass_data_out[row][col]),
+                    .mac_full_flag(mac_full_flag[row][col]),
+                    .psum_out_vld(mac_psum_out_vld[row][col])
                 );
             end
         end
@@ -144,10 +152,6 @@ module systolic_array #(
         end
     endgenerate
 
-    
-
-    //TODO: Ctrl unit instantiation
-    // generate rst accmulator and bypass enable control signals
     ctrl #(
         .IN_WIDTH(IN_WIDTH),
         .OUT_WIDTH(OUT_WIDTH),
@@ -155,11 +159,11 @@ module systolic_array #(
         .COLS(COLS),
         .MULT_LAT(MULT_LAT),
         .ACC_LAT(ACC_LAT)
-    ) ctrl_0(
+    ) ctrl_0 (
         .clk(clk),
-        .rst(rst),
-        .input_rst_accumulator(rst_accumulator_rdy),
-        .input_stream_out_rdy(stream_out_rdy),
+        .rst(rst_r),
+        .input_rst_accumulator(rst_accumulator_rdy_r),
+        .input_stream_out_rdy(stream_out_rdy_r),
         .rst_accumulator(control_rst_accumulator_rdy),
         .stream_out_rdy(control_stream_out_rdy)
     );
